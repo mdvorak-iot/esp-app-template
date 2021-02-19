@@ -7,6 +7,8 @@ idf_component_register(
         log
         esp32
         esp_wifi
+        wifi_provisioning
+        bt
         app_update
         double_reset
         status_led
