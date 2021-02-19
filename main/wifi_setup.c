@@ -9,20 +9,20 @@
 
 static const char TAG[] = "wifi_setup";
 
-static esp_timer_handle_t provisioning_timer = NULL;
+static esp_timer_handle_t wifi_prov_timeout_timer = NULL;
 static wifi_config_t startup_wifi_config = {};
 
-static void provisioning_timer_delete()
+static void wifi_prov_timeout_timer_delete()
 {
-    if (provisioning_timer)
+    if (wifi_prov_timeout_timer)
     {
-        esp_timer_stop(provisioning_timer);
-        esp_timer_delete(provisioning_timer);
-        provisioning_timer = NULL;
+        esp_timer_stop(wifi_prov_timeout_timer);
+        esp_timer_delete(wifi_prov_timeout_timer);
+        wifi_prov_timeout_timer = NULL;
     }
 }
 
-static void provisioning_timer_handler(__unused void *arg)
+static void wifi_prov_timeout_handler(__unused void *arg)
 {
     ESP_LOGI(TAG, "provisioning timeout");
     wifi_prov_mgr_stop_provisioning();
@@ -52,7 +52,7 @@ static void wifi_prov_event_handler(__unused void *arg, __unused esp_event_base_
         break;
     case WIFI_PROV_END: {
         ESP_LOGI(TAG, "provisioning end");
-        provisioning_timer_delete();
+        wifi_prov_timeout_timer_delete();
         wifi_prov_mgr_deinit();
 
         // When successful, config should be correctly set
@@ -133,11 +133,11 @@ void setup_wifi(bool reconfigure)
         ESP_ERROR_CHECK(wifi_prov_mgr_start_provisioning(WIFI_PROV_SECURITY_1, NULL, service_name, NULL));
 
         esp_timer_create_args_t args = {
-            .callback = provisioning_timer_handler,
-            .name = "wifi_prov_timer",
+            .callback = wifi_prov_timeout_handler,
+            .name = "wifi_prov_timeout_timer",
         };
-        ESP_ERROR_CHECK(esp_timer_create(&args, &provisioning_timer));
-        ESP_ERROR_CHECK(esp_timer_start_once(provisioning_timer, APP_WIFI_PROV_TIMEOUT_S * 1000000));
+        ESP_ERROR_CHECK(esp_timer_create(&args, &wifi_prov_timeout_timer));
+        ESP_ERROR_CHECK(esp_timer_start_once(wifi_prov_timeout_timer, APP_WIFI_PROV_TIMEOUT_S * 1000000));
     }
     else
     {
