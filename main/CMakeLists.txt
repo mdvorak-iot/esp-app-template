@@ -12,4 +12,5 @@ idf_component_register(
         status_led
         wps_config
         wifi_reconnect
+        aws_iot_shadow
 )

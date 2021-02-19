@@ -17,3 +17,6 @@
 	path = components/wifi_reconnect
 	url = https://github.com/mdvorak-iot/esp-wifi-reconnect.git
 	branch = c620a7a
+[submodule "aws_iot_shadow"]
+	path = components/aws_iot_shadow
+	url = https://github.com/mdvorak-iot/esp-aws-iot-shadow.git
