@@ -6,6 +6,7 @@
 #include <nvs_flash.h>
 #include <status_led.h>
 #include <wifi_provisioning/manager.h>
+#include <wifi_reconnect.h>
 
 static const char TAG[] = "main";
 
@@ -14,7 +15,7 @@ static bool mqtt_started = true;
 static esp_mqtt_client_handle_t mqtt_client = nullptr;
 static aws_shadow_handle_t shadow_client = nullptr;
 
-extern "C" void setup_wifi(bool reconfigure); // defined in wifi.c
+extern "C" void setup_wifi(bool reconfigure); // defined in wifi_setup.c
 
 static void do_mqtt_connect()
 {
@@ -60,6 +61,14 @@ static void setup_init()
         IP_EVENT, IP_EVENT_STA_GOT_IP, [](void *, esp_event_base_t, int32_t, void *) { status_led_set_interval_for(STATUS_LED_DEFAULT, 200, false, 700, true); }, nullptr);
     esp_event_handler_register(
         WIFI_PROV_EVENT, WIFI_PROV_START, [](void *, esp_event_base_t, int32_t, void *) { status_led_set_interval(STATUS_LED_DEFAULT, 50, true); }, nullptr);
+    esp_event_handler_register(
+        WIFI_PROV_EVENT, WIFI_PROV_END, [](void *, esp_event_base_t, int32_t, void *) {
+            if (!wifi_reconnect_is_connected())
+            {
+                status_led_set_interval(STATUS_LED_DEFAULT, 500, true);
+            }
+        },
+        nullptr);
 
     // MQTT
     //    esp_mqtt_client_config_t mqtt_cfg = {};
