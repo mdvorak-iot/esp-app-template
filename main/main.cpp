@@ -15,6 +15,7 @@ static bool mqtt_started = true;
 static esp_mqtt_client_handle_t mqtt_client = nullptr;
 static aws_shadow_handle_t shadow_client = nullptr;
 
+extern "C" void setup_aws();                  // defined in aws_setup.c
 extern "C" void setup_wifi(bool reconfigure); // defined in wifi_setup.c
 
 static void do_mqtt_connect()
@@ -115,6 +116,7 @@ extern "C" void app_main()
     // Setup
     setup_init();
     setup_devices();
+    setup_aws(); // must be called before wifi, to initialize provision hooks
     setup_wifi(reconfigure);
     setup_final();
 

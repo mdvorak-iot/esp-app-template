@@ -129,7 +129,6 @@ void setup_wifi(bool reconfigure)
         char service_name[sizeof(device_name) + 5] = {};
         snprintf(service_name, sizeof(service_name), "PROV_%s", device_name);
 
-        //ESP_ERROR_CHECK(wifi_prov_mgr_endpoint_create("custom-data")); // TODO
         ESP_ERROR_CHECK(wifi_prov_mgr_start_provisioning(WIFI_PROV_SECURITY_1, NULL, service_name, NULL));
 
         esp_timer_create_args_t args = {
