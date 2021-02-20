@@ -10,6 +10,7 @@
 
 static const char TAG[] = "main";
 
+static char device_name[65] = {}; // max 64 characters
 static bool reconfigure = false;
 static bool mqtt_started = true;
 static esp_mqtt_client_handle_t mqtt_client = nullptr;
@@ -54,6 +55,16 @@ static void setup_init()
     // Status LED
     ESP_ERROR_CHECK_WITHOUT_ABORT(status_led_create_default());
     ESP_ERROR_CHECK_WITHOUT_ABORT(status_led_set_interval(STATUS_LED_DEFAULT, 500, true));
+
+    // Device name
+    esp_app_desc_t app_info = {};
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_get_partition_description(esp_ota_get_running_partition(), &app_info));
+
+    uint64_t mac = 0;
+    ESP_ERROR_CHECK(esp_efuse_mac_get_default((uint8_t *)&mac));
+
+    snprintf(device_name, sizeof(device_name), "%.25s-%06llx", app_info.project_name, mac);
+    ESP_LOGI(TAG, "device name '%s'", device_name);
 
     // Events
     esp_event_handler_register(

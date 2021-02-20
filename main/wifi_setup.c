@@ -1,5 +1,4 @@
 #include <esp_log.h>
-#include <esp_ota_ops.h>
 #include <esp_wifi.h>
 #include <wifi_provisioning/manager.h>
 #include <wifi_provisioning/scheme_ble.h>
@@ -80,20 +79,8 @@ static void wifi_prov_event_handler(__unused void *arg, __unused esp_event_base_
     }
 }
 
-void setup_wifi(bool reconfigure)
+void setup_wifi(bool reconfigure, const char *device_name)
 {
-    // Get app info
-    esp_app_desc_t app_info = {};
-    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_get_partition_description(esp_ota_get_running_partition(), &app_info));
-
-    // Service device_name
-    uint64_t mac = 0;
-    ESP_ERROR_CHECK(esp_efuse_mac_get_default((uint8_t *)&mac));
-
-    char device_name[33] = {}; // max 32 characters
-    snprintf(device_name, sizeof(device_name), "%.25s-%06llx", app_info.project_name, mac);
-    ESP_LOGI(TAG, "device name '%s'", device_name);
-
     // Initialize WiFi
     ESP_ERROR_CHECK(esp_netif_init());
     esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
@@ -126,7 +113,7 @@ void setup_wifi(bool reconfigure)
         // Provisioning mode
         ESP_LOGI(TAG, "provisioning starting, timeout %d s", APP_WIFI_PROV_TIMEOUT_S);
 
-        char service_name[sizeof(device_name) + 5] = {};
+        char service_name[65] = {}; // Note: only first 29 chars will be probably broadcast
         snprintf(service_name, sizeof(service_name), "PROV_%s", device_name);
 
         ESP_ERROR_CHECK(wifi_prov_mgr_start_provisioning(WIFI_PROV_SECURITY_1, NULL, service_name, NULL));
