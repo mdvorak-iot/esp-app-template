@@ -6,16 +6,11 @@ idf_component_register(
         REQUIRES
         freertos
         nvs_flash
-        log
-        esp32
-        esp_wifi
-        app_update
+        rmaker_common
+        wifi_provisioning
         double_reset
         status_led
-        wps_config
         wifi_reconnect
-        rapidjson
-        config_state
-        aws_iot_mqtt_config
-        aws_iot_shadow
+        app_wifi
+        rainmaker_init
 )
