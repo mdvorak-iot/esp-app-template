@@ -17,3 +17,7 @@
 [submodule "app_wifi"]
 	path = components/app_wifi
 	url = https://github.com/mdvorak-iot/esp-app-wifi.git
+
+[submodule "rainmaker_init"]
+	path = components/rainmaker_init
+	url = https://github.com/mdvorak-iot/esp-rainmaker-init.git
