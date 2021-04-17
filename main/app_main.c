@@ -4,6 +4,7 @@
 #include <double_reset.h>
 #include <esp_log.h>
 #include <esp_rmaker_core.h>
+#include <esp_rmaker_schedule.h>
 #include <esp_rmaker_standard_params.h>
 #include <esp_wifi.h>
 #include <nvs_flash.h>
@@ -54,6 +55,7 @@ void setup()
 
     esp_rmaker_node_t *node = NULL;
     ESP_ERROR_CHECK(app_rmaker_init(node_name, &node));
+    ESP_ERROR_CHECK(esp_rmaker_schedule_enable());
 
     app_devices_init(node);
 
