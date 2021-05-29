@@ -74,6 +74,7 @@ _Noreturn void app_main()
     //setup();
     gpio_reset_pin(GPIO_NUM_17);
     gpio_set_direction(GPIO_NUM_17, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(GPIO_NUM_17, GPIO_PULLDOWN_ONLY);
 
     // Run
     ESP_LOGI(TAG, "life is good");
