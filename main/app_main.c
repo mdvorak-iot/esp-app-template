@@ -2,12 +2,14 @@
 #include <app_rainmaker.h>
 #include <app_wifi.h>
 #include <double_reset.h>
+#include <driver/gpio.h>
 #include <esp_log.h>
 #include <esp_rmaker_core.h>
 #include <esp_rmaker_standard_params.h>
 #include <esp_wifi.h>
 #include <nvs_flash.h>
 #include <string.h>
+#include <sys/cdefs.h>
 #include <wifi_reconnect.h>
 
 #define APP_DEVICE_NAME CONFIG_APP_DEVICE_NAME
@@ -66,12 +68,27 @@ void setup()
     ESP_LOGI(TAG, "setup complete");
 }
 
-void app_main()
+_Noreturn void app_main()
 {
-    setup();
+    //setup();
+    gpio_reset_pin(GPIO_NUM_32);
+    gpio_set_direction(GPIO_NUM_32, GPIO_MODE_INPUT);
+
+    gpio_reset_pin(GPIO_NUM_22);
+    gpio_set_direction(GPIO_NUM_32, GPIO_MODE_OUTPUT);
 
     // Run
     ESP_LOGI(TAG, "life is good");
+
+    for (;;)
+    {
+        int v = gpio_get_level(GPIO_NUM_32);
+        if (v) ESP_LOGW(TAG, "out=%d", v);
+        else
+            ESP_LOGI(TAG, "out=%d", v);
+        gpio_set_level(GPIO_NUM_22, v);
+        vTaskDelay(10);
+    }
 }
 
 static esp_err_t device_write_cb(__unused const esp_rmaker_device_t *device, const esp_rmaker_param_t *param,
