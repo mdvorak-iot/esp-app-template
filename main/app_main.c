@@ -11,6 +11,7 @@
 #include <string.h>
 #include <sys/cdefs.h>
 #include <wifi_reconnect.h>
+#include <status_led.h>
 
 #define APP_DEVICE_NAME CONFIG_APP_DEVICE_NAME
 #define APP_DEVICE_TYPE CONFIG_APP_DEVICE_TYPE
@@ -60,9 +61,9 @@ void setup()
     app_devices_init(node);
 
     // Start
-    ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, node_name)); // NOTE this isn't available before WiFi init
-    ESP_ERROR_CHECK(esp_rmaker_start());
-    ESP_ERROR_CHECK(app_wifi_start(reconfigure));
+    //    ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, node_name)); // NOTE this isn't available before WiFi init
+    //    ESP_ERROR_CHECK(esp_rmaker_start());
+    //    ESP_ERROR_CHECK(app_wifi_start(reconfigure));
 
     // Done
     ESP_LOGI(TAG, "setup complete");
@@ -71,23 +72,20 @@ void setup()
 _Noreturn void app_main()
 {
     //setup();
-    gpio_reset_pin(GPIO_NUM_32);
-    gpio_set_direction(GPIO_NUM_32, GPIO_MODE_INPUT);
-
-    gpio_reset_pin(GPIO_NUM_22);
-    gpio_set_direction(GPIO_NUM_32, GPIO_MODE_OUTPUT);
+    gpio_reset_pin(GPIO_NUM_17);
+    gpio_set_direction(GPIO_NUM_17, GPIO_MODE_INPUT);
 
     // Run
     ESP_LOGI(TAG, "life is good");
 
     for (;;)
     {
-        int v = gpio_get_level(GPIO_NUM_32);
+        int v = gpio_get_level(GPIO_NUM_17);
         if (v) ESP_LOGW(TAG, "out=%d", v);
         else
             ESP_LOGI(TAG, "out=%d", v);
-        gpio_set_level(GPIO_NUM_22, v);
-        vTaskDelay(10);
+        status_led_set_state(STATUS_LED_DEFAULT, v);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
     }
 }
 
