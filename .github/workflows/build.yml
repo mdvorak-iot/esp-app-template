@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          recursive: true
+          submodules: true
 
       - name: Build
         env:
@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          recursive: true
+          submodules: true
 
       - name: Setup Python
         uses: actions/setup-python@v2.3.1
