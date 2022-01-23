@@ -9,6 +9,9 @@ on:
     branches: [ "main" ]
     paths-ignore: [ "*.md" ]
 
+env:
+  IDF_COMPONENT_MANAGER: "1"
+
 jobs:
   idf:
     runs-on: ubuntu-latest
