@@ -1,8 +1,6 @@
-# esp-app-template
+# app_template
 
 TODO description.
-
-Based on ESP RainMaker platform.
 
 ## Usage
 
@@ -29,8 +27,5 @@ and select `Application configuration` in root menu and configure application pa
 Flash it via
 
 ```
-idf.py -b 921600 build flash monitor
+idf.py build flash monitor
 ```
-
-As an alternative, you can use [PlatformIO](https://docs.platformio.org/en/latest/core/installation.html) to build and
-flash the project.

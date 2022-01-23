@@ -1,9 +1,25 @@
 menu "Application config"
     config APP_DEVICE_NAME
-        string "RainMaker device name"
-        default "Example"
+        string "Device name"
+        default "app_template"
+        help
+            Default name of the device, used in provisioning and as a hostname.
 
-    config APP_DEVICE_TYPE
-        string "RainMaker device type"
-        default "esp.device.switch"
+    config APP_CONTROL_BUTTON_PIN
+        int "Control button PIN"
+        default 0
+        help
+            GPIO pin for the control button.
+
+    config APP_CONTROL_BUTTON_PROVISION_MS
+        int "Control button provisioning delay in ms"
+        default 3000
+
+    config APP_CONTROL_BUTTON_FACTORY_RESET_MS
+        int "Control button factory reset delay in ms"
+        default 10000
+
+    config APP_SNTP_SERVER
+        string "SNTP server"
+        default "pool.ntp.org"
 endmenu
