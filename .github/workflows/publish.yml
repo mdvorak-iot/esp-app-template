@@ -16,7 +16,6 @@ permissions:
 
 env:
   PACKAGE_NAME: app_template
-  TARGET_REF: ${{ inputs.ref || github.ref }}
 
 jobs:
   # NOTE make sure release exists before concurrent matrix build, to avoid race-conditions
@@ -26,7 +25,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.TARGET_REF }}
+          tag_name: ${{ inputs.ref }}
           generate_release_notes: true
 
   build:
@@ -38,13 +37,14 @@ jobs:
         # Pre-built configurations
         include:
           - { idf_target: esp32 }
+          - { idf_target: esp32s2 }
     container: espressif/idf:release-v4.4
     env:
       IDF_TARGET: ${{ matrix.idf_target }}
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ env.TARGET_REF }}
+          ref: ${{ inputs.ref }}
 
       - name: Force SoftAP Provisioning
         if: ${{ matrix.idf_target == 'esp32s2' }}
@@ -69,7 +69,7 @@ jobs:
       - name: Upload assets
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.TARGET_REF }}
+          tag_name: ${{ inputs.ref }}
           files: build/upload/*
           fail_on_unmatched_files: true
 
@@ -82,7 +82,7 @@ jobs:
         if: ${{ needs.build.result == 'success' }}
         uses: softprops/action-gh-release@master # TODO use stable when append_body is supported
         with:
-          tag_name: ${{ env.TARGET_REF }}
+          tag_name: ${{ inputs.ref }}
           append_body: true
           body: |
             
@@ -92,7 +92,7 @@ jobs:
         if: ${{ needs.build.result != 'success' }}
         uses: softprops/action-gh-release@master # TODO use stable when append_body is supported
         with:
-          tag_name: ${{ env.TARGET_REF }}
+          tag_name: ${{ inputs.ref }}
           append_body: true
           body: |
             
