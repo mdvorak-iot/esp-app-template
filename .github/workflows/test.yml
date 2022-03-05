@@ -41,6 +41,13 @@ jobs:
           . ${IDF_PATH}/export.sh
           pip install --upgrade idf-component-manager
 
+      - name: Force SoftAP Provisioning
+        if: ${{ matrix.idf_target == 'esp32s2' }}
+        run: |
+          echo "CONFIG_WIFI_AUTO_PROV_TYPE_BLE=n" >> sdkconfig
+          echo "CONFIG_WIFI_AUTO_PROV_TYPE_SOFT_AP=y" >> sdkconfig
+          echo "CONFIG_BT_ENABLED=n" >> sdkconfig
+
       - name: Build
         run: |
           . ${IDF_PATH}/export.sh
