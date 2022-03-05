@@ -71,3 +71,29 @@ jobs:
         with:
           tag_name: ${{ env.TARGET_REF }}
           files: build/upload/*
+          fail_on_unmatched_files: true
+
+  finalize:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Success
+        if: ${{ needs.build.result == 'success' }}
+        uses: softprops/action-gh-release@master # TODO use stable when append_body is supported
+        with:
+          tag_name: ${{ env.TARGET_REF }}
+          append_body: true
+          body: |
+            
+            *<sub>All assets built successfully</sub>*
+
+      - name: Failure
+        if: ${{ needs.build.result != 'success' }}
+        uses: softprops/action-gh-release@master # TODO use stable when append_body is supported
+        with:
+          tag_name: ${{ env.TARGET_REF }}
+          append_body: true
+          body: |
+            
+            **Some assets failed to build.**
