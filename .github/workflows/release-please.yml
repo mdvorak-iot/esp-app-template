@@ -23,7 +23,7 @@ jobs:
           package-name: app_template
 
   publish:
-    uses: github.com/mdvorak-iot/esp-app-template/.github/workflows/publish.yml@main
+    uses: ./.github/workflows/publish.yml
     needs: [ release-please ]
     if: ${{ needs.release-please.outputs.release_created }}
     with:
