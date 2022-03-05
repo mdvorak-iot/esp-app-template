@@ -5,11 +5,26 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: google-github-actions/release-please-action@v3
+        id: release
         with:
           release-type: simple
           package-name: app_template
+
+  publish:
+    uses: github.com/mdvorak-iot/esp-app-template/.github/workflows/publish.yml@main
+    needs: [ release-please ]
+    if: ${{ needs.release-please.outputs.release_created }}
+    with:
+      ref: ${{ needs.release-please.outputs.tag_name }}

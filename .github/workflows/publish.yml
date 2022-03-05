@@ -1,0 +1,66 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_call:
+    inputs:
+      ref:
+        description: "Git ref override"
+        type: string
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  PACKAGE_NAME: app_template
+  TARGET_REF: ${{ inputs.ref || github.ref }}
+
+jobs:
+  # NOTE make sure release exists before concurrent matrix build, to avoid race-conditions
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TARGET_REF }}
+          generate_release_notes: true
+
+  build:
+    needs: [ release ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Pre-built configurations
+        include:
+          - { idf_target: esp32 }
+    container: espressif/idf:release-4.4
+    env:
+      IDF_TARGET: ${{ matrix.idf_target }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ env.TARGET_REF }}
+
+      - name: Build
+        env:
+          IDF_TARGET: ${{ matrix.idf_target }}
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py build
+
+      # This is needed, since softprops/action-gh-release does not support asset renaming
+      - name: Prepare assets
+        run: |
+          mkdir build/upload
+          mv build/${{ env.PACKAGE_NAME }}.bin build/upload/${{ env.PACKAGE_NAME }}-${{ matrix.idf_target }}.bin
+
+      - name: Upload assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TARGET_REF }}
+          files: build/upload/*
