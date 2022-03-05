@@ -8,6 +8,7 @@ on:
   pull_request:
     branches: [ "main" ]
     paths-ignore: [ "*.md" ]
+  workflow_dispatch:
 
 env:
   IDF_COMPONENT_MANAGER: "1"
@@ -26,8 +27,10 @@ jobs:
           - { idf_target: esp32c3, idf_ver: v4.3 }
           - { idf_target: esp32s3, idf_ver: v4.3 }
     container: espressif/idf:release-${{ matrix.idf_ver }}
+    env:
+      IDF_TARGET: ${{ matrix.idf_target }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup Component Manager
         if: idf_ver == v4.3
@@ -36,16 +39,6 @@ jobs:
           pip install --upgrade idf-component-manager
 
       - name: Build
-        env:
-          IDF_TARGET: ${{ matrix.idf_target }}
-        working-directory: example
         run: |
-          # Switch to SoftAP provisioning for esp32s2 
-          if [ ${{ matrix.idf_target == 'esp32s2' }} ]; then
-            echo "CONFIG_WIFI_AUTO_PROV_TYPE_BLE=n" >> sdkconfig
-            echo "CONFIG_WIFI_AUTO_PROV_TYPE_SOFT_AP=y" >> sdkconfig
-            echo "CONFIG_BT_ENABLED=n" >> sdkconfig
-          fi
-          
           . ${IDF_PATH}/export.sh
           idf.py build

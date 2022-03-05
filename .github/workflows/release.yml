@@ -1,4 +1,4 @@
-name: platformio release
+name: release
 
 on:
   release:
@@ -7,28 +7,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Pre-built configurations
+        include:
+          - { idf_target: esp32 }
+    container: espressif/idf:release-4.4
+    env:
+      IDF_TARGET: ${{ matrix.idf_target }}
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
+      - uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.9
-          
-      - name: Install platformio
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade platformio
-          
-      - name: Check
-        run: |
-          platformio check
-          
       - name: Build
+        env:
+          IDF_TARGET: ${{ matrix.idf_target }}
         run: |
-          platformio run -e release
+          . ${IDF_PATH}/export.sh
+          idf.py build
 
       - name: Get the upload URL for a release
         uses: bruceadams/get-release@v1.2.3
