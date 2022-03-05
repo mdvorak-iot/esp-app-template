@@ -9,3 +9,4 @@ cmake-build-*/
 build/
 sdkconfig
 sdkconfig.old
+CMakeFiles/
