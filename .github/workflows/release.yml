@@ -4,6 +4,9 @@ on:
   release:
     types: [ published ]
 
+env:
+  PACKAGE_NAME: app_template
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,12 +35,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload firmware.bin
+      - name: Upload binary
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: .pio/build/release/firmware.bin
-          asset_name: firmware.bin
+          asset_path: build/${{ env.PACKAGE_NAME }}.bin
+          asset_name: ${{ env.PACKAGE_NAME }}-${{ matrix.idf_target }}.bin
           asset_content_type: application/octet-stream
