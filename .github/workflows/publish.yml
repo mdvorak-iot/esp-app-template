@@ -42,7 +42,7 @@ jobs:
     env:
       IDF_TARGET: ${{ matrix.idf_target }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
 
